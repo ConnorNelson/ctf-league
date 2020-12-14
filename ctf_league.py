@@ -1,4 +1,5 @@
 import collections
+import datetime
 
 import requests
 
@@ -38,13 +39,13 @@ def linear_leaderboard(year, num_events):
 
     print("=== Events ===")
     count = 0
-    for event in sorted(events_2020, key=lambda k: -k["weight"]):
+    for event in sorted(events, key=lambda k: -k["weight"]):
         event_id = str(event["id"])
         if event_id in results:
             count += 1
             print(event["title"])
             value = num_events
-            for i, team in enumerate(results_data[event_id]["scores"][:10]):
+            for i, team in enumerate(results[event_id]["scores"][:10]):
                 assert team["place"] == i + 1
                 team_id = team["team_id"]
                 team_scores[team_id] += value
