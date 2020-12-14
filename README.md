@@ -1,5 +1,9 @@
 # CTF League
 
+10 events (top 10 highest rated from https://ctftime.org/).
+
+For each event, first place gets 10 points, second place gets 9 points, third place gets 8 points, and so on.
+
 ## 2020 Results
 
 ### Events
