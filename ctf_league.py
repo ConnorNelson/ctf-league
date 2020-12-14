@@ -31,28 +31,26 @@ def ctftime_team(team_id):
     return ctftime_get(f"/teams/{team_id}/")
 
 
-def linear_leaderboard(year, num_events):
+def linear_leaderboard(year, num_events, num_teams):
     events = ctftime_year_events(year)
     results = ctftime_year_results(year)
 
     team_scores = collections.defaultdict(int)
 
-    print("=== Events ===")
-    count = 0
-    for event in sorted(events, key=lambda k: -k["weight"]):
-        event_id = str(event["id"])
-        if event_id in results:
-            count += 1
-            print(event["title"])
-            value = num_events
-            for i, team in enumerate(results[event_id]["scores"][:10]):
-                assert team["place"] == i + 1
-                team_id = team["team_id"]
-                team_scores[team_id] += value
-                value -= 1
+    def cmp_event(event):
+        return str(event["id"]) not in results, -event["weight"]
 
-        if count >= num_events:
-            break
+    print("=== Events ===")
+    top_events = sorted(events, key=cmp_event)[:num_events]
+    for event in top_events:
+        print(event["title"])
+        top_teams = results[str(event["id"])]["scores"][:num_teams]
+        for i, team in enumerate(top_teams):
+            assert team["place"] == i + 1
+            team_id = team["team_id"]
+            value = num_events - i
+            tie_breaker_value = pow(num_events + 1, -(i + 1))
+            team_scores[team_id] += value + tie_breaker_value
 
     print()
 
@@ -62,8 +60,8 @@ def linear_leaderboard(year, num_events):
     for i, (team_id, score) in enumerate(rankings):
         rank = i + 1
         name = ctftime_team(team_id)["name"]
-        print(rank, "\t", score, "\t", name)
+        print(rank, "\t", int(score), "\t", name)
 
 
 if __name__ == "__main__":
-    linear_leaderboard(2020, 10)
+    linear_leaderboard(2020, 10, 10)
